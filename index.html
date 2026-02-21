@@ -1,22 +1,543 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>CampusHire Login</title>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusHire - Login & Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-logout {
+            background: #dc3545;
+            margin-top: 20px;
+        }
+
+        .btn-logout:hover {
+            box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            text-align: center;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 32px;
+            color: white;
+        }
+
+        .user-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-badge.student {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .role-badge.recruiter {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .role-badge.admin {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .dashboard h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .features h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .feature-item:hover {
+            background: #e9ecef;
+        }
+
+        .feature-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+            border-top: 1px solid #eee;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
 <body>
 
-<h2>CampusHire Login</h2>
+    <div class="container">
+        <!-- Header (visible when not logged in) -->
+        <div class="header" id="authHeader">
+            <h1>🎓 CampusHire</h1>
+            <p>Connect with opportunities. Land your dream job.</p>
+        </div>
 
-<form>
-    <label>Email:</label><br>
-    <input type="text"><br><br>
+        <!-- Tabs (visible when not logged in) -->
+        <div class="tabs" id="authTabs">
+            <div class="tab active" onclick="switchTab('login')">Login</div>
+            <div class="tab" onclick="switchTab('register')">Register</div>
+        </div>
 
-    <label>Password:</label><br>
-    <input type="password"><br><br>
+        <div class="form-container">
+            <!-- Login Form -->
+            <form id="loginForm" class="form active" onsubmit="handleLogin(event)">
+                <div id="loginMessage" class="message"></div>
 
-    <button>Login</button>
-</form>
+                <div class="form-group">
+                    <label for="loginEmail">📧 Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
 
+                <div class="form-group">
+                    <label for="loginPassword">🔒 Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn">Login</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="form" onsubmit="handleRegister(event)">
+                <div id="registerMessage" class="message"></div>
+
+                <div class="form-group">
+                    <label for="regName">👤 Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">📧 Email Address</label>
+                    <input type="email" id="regEmail" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">🔒 Password</label>
+                    <input type="password" id="regPassword" placeholder="Create a password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regRole">🎭 Role</label>
+                    <select id="regRole" required>
+                        <option value="student" selected>Student</option>
+                        <option value="recruiter">Recruiter</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Register</button>
+            </form>
+
+            <!-- Dashboard (visible after login) -->
+            <div id="dashboard" class="dashboard">
+                <div class="user-info">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-name" id="displayName">User Name</div>
+                    <div class="user-email" id="displayEmail">user@email.com</div>
+                    <div class="role-badge" id="displayRole">Student</div>
+                </div>
+
+                <h2>Welcome to CampusHire!</h2>
+
+                <div class="features">
+                    <h3>Your Dashboard:</h3>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔍</span>
+                        <span id="feature1">Browse Jobs</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📄</span>
+                        <span id="feature2">View Applications</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">⚙️</span>
+                        <span>Profile Settings</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="footer" id="authFooter">
+            © 2025 CampusHire. All rights reserved.
+        </div>
+    </div>
+
+    <script>
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const userRole = localStorage.getItem('userRole');
+            const userName = localStorage.getItem('userName');
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (token && userRole) {
+                showDashboard(userName, userEmail, userRole);
+            }
+        });
+
+        // Show dashboard after login
+        function showDashboard(name, email, role) {
+            // Hide auth sections
+            document.getElementById('authHeader').classList.add('hidden');
+            document.getElementById('authTabs').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('registerForm').classList.remove('active');
+            document.getElementById('authFooter').classList.add('hidden');
+
+            // Show dashboard
+            document.getElementById('dashboard').classList.add('active');
+
+            // Set user info
+            document.getElementById('displayName').textContent = name || 'User';
+            document.getElementById('displayEmail').textContent = email || '';
+            
+            const roleBadge = document.getElementById('displayRole');
+            roleBadge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+            roleBadge.className = 'role-badge ' + role;
+
+            // Customize features based on role
+            const feature1 = document.getElementById('feature1');
+            const feature2 = document.getElementById('feature2');
+            
+            if (role === 'student') {
+                feature1.textContent = 'Browse Jobs';
+                feature2.textContent = 'My Applications';
+            } else if (role === 'recruiter') {
+                feature1.textContent = 'Post New Job';
+                feature2.textContent = 'View Applicants';
+            } else if (role === 'admin') {
+                feature1.textContent = 'Manage Users';
+                feature2.textContent = 'System Settings';
+            }
+        }
+
+        // Switch between login and register tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelector('.tab:first-child').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelector('.tab:last-child').classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+
+        // Show message function
+        function showMessage(elementId, message, isError) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'message ' + (isError ? 'error' : 'success');
+            setTimeout(() => {
+                el.className = 'message';
+            }, 5000);
+        }
+
+        // Login handler
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userRole', data.role);
+                    localStorage.setItem('userEmail', email);
+                    
+                    // Get user name from registration data or use email
+                    localStorage.setItem('userName', email.split('@')[0]);
+                    
+                    showMessage('loginMessage', 'Login successful!', false);
+                    
+                    // Show dashboard
+                    setTimeout(() => {
+                        showDashboard(email.split('@')[0], email, data.role);
+                    }, 500);
+                } else {
+                    showMessage('loginMessage', data.error || 'Login failed', true);
+                }
+            } catch (error) {
+                showMessage('loginMessage', 'Error connecting to server', true);
+                console.error('Error:', error);
+            }
+        }
+
+        // Register handler
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('registerMessage', 'Registration successful! Please login.', false);
+                    document.getElementById('registerForm').reset();
+                    setTimeout(() => {
+                        switchTab('login');
+                    }, 1500);
+                } else {
+                    showMessage('registerMessage', data.error || 'Registration failed', true);
+                }
+            } catch (error) {
+                showMessage('registerMessage', 'Error connecting to server', true);
+                console.error('Error:', error);
+            }
+        }
+
+        // Logout handler
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+            
+            // Show auth sections
+            document.getElementById('authHeader').classList.remove('hidden');
+            document.getElementById('authTabs').classList.remove('hidden');
+            document.getElementById('authFooter').classList.remove('hidden');
+            
+            // Hide dashboard
+            document.getElementById('dashboard').classList.remove('active');
+            
+            // Show login form
+            switchTab('login');
+            
+            // Clear form
+            document.getElementById('loginForm').reset();
+        }
+    </script>
 </body>
 </html>
