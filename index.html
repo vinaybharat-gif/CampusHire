@@ -270,6 +270,19 @@
         .hidden {
             display: none !important;
         }
+
+        /* Jobs Section */
+        #jobsSection {
+            text-align: left;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        #jobsSection h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -349,11 +362,11 @@
 
                 <div class="features">
                     <h3>Your Dashboard:</h3>
-                    <div class="feature-item">
+                    <div class="feature-item" id="feature1Item" onclick="handleFeature1()">
                         <span class="feature-icon">🔍</span>
                         <span id="feature1">Browse Jobs</span>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item" id="feature2Item" onclick="handleFeature2()">
                         <span class="feature-icon">📄</span>
                         <span id="feature2">View Applications</span>
                     </div>
@@ -361,6 +374,12 @@
                         <span class="feature-icon">⚙️</span>
                         <span>Profile Settings</span>
                     </div>
+                </div>
+
+                <!-- Jobs Display Section -->
+                <div id="jobsSection" style="display:none; margin-top:20px;">
+                    <h3>Available Jobs</h3>
+                    <div id="jobsList"></div>
                 </div>
 
                 <button class="btn btn-logout" onclick="handleLogout()">Logout</button>
@@ -418,6 +437,30 @@
             } else if (role === 'admin') {
                 feature1.textContent = 'Manage Users';
                 feature2.textContent = 'System Settings';
+            }
+        }
+
+        // Handle feature 1 click based on role
+        function handleFeature1() {
+            const role = localStorage.getItem('userRole');
+            if (role === 'student') {
+                loadJobs();
+            } else if (role === 'recruiter') {
+                alert('Post New Job - Feature coming soon!');
+            } else if (role === 'admin') {
+                alert('Manage Users - Feature coming soon!');
+            }
+        }
+
+        // Handle feature 2 click based on role
+        function handleFeature2() {
+            const role = localStorage.getItem('userRole');
+            if (role === 'student') {
+                alert('My Applications - Feature coming soon!');
+            } else if (role === 'recruiter') {
+                alert('View Applicants - Feature coming soon!');
+            } else if (role === 'admin') {
+                alert('System Settings - Feature coming soon!');
             }
         }
 
@@ -513,6 +556,77 @@
                 }
             } catch (error) {
                 showMessage('registerMessage', 'Error connecting to server', true);
+                console.error('Error:', error);
+            }
+        }
+
+        // Load Jobs function
+        async function loadJobs() {
+            const jobsSection = document.getElementById('jobsSection');
+            const jobsList = document.getElementById('jobsList');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (jobsSection.style.display === 'none') {
+                jobsSection.style.display = 'block';
+                jobsList.innerHTML = '<p>Loading jobs...</p>';
+                
+                try {
+                    const response = await fetch('http://localhost:3000/api/jobs');
+                    const jobs = await response.json();
+                    
+                    if (jobs.length === 0) {
+                        jobsList.innerHTML = '<p>No jobs available.</p>';
+                    } else {
+                        let output = '';
+                        jobs.forEach(job => {
+                            output += `
+                                <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px;">
+                                    <h4 style="margin:0 0 10px; color:#333;">${job.title}</h4>
+                                    <p style="margin:5px 0; color:#666;">🏢 ${job.company}</p>
+                                    <p style="margin:5px 0; color:#666;">💰 ${job.salary || 'Not specified'}</p>
+                                    <p style="margin:10px 0 0; color:#555;">${job.description}</p>
+                                    ${userRole === 'student' ? `<button onclick="applyForJob(${job.id}, '${job.title}')" style="margin-top:10px; padding:8px 16px; background:#28a745; color:white; border:none; border-radius:4px; cursor:pointer;">Apply Now</button>` : ''}
+                                </div>
+                            `;
+                        });
+                        jobsList.innerHTML = output;
+                    }
+                } catch (error) {
+                    jobsList.innerHTML = '<p style="color:red;">Error loading jobs.</p>';
+                    console.error('Error:', error);
+                }
+            } else {
+                jobsSection.style.display = 'none';
+            }
+        }
+
+        // Apply for Job function
+        async function applyForJob(jobId, jobTitle) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/applications', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ job_id: jobId })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Successfully applied for ' + jobTitle + '!');
+                } else {
+                    alert(data.error || 'Failed to apply');
+                }
+            } catch (error) {
+                alert('Error applying for job');
                 console.error('Error:', error);
             }
         }

@@ -128,9 +128,9 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
 
 // Get all jobs (for students)
 app.get('/api/jobs', (req, res) => {
-    const query = 'SELECT * FROM jobs ORDER BY created_at DESC';
+    const query = 'SELECT * FROM jobs ORDER BY id DESC';
     db.query(query, (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) return res.status(500).json({ error: 'Database error: ' + err.message });
         res.json(results);
     });
 });
@@ -194,13 +194,13 @@ app.post('/api/applications', authenticateToken, (req, res) => {
     // Check if already applied
     const checkQuery = 'SELECT * FROM applications WHERE job_id = ? AND applicant_id = ?';
     db.query(checkQuery, [job_id, req.user.id], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) return res.status(500).json({ error: 'Database error: ' + err.message });
         if (results.length > 0) return res.status(400).json({ error: 'You have already applied for this job' });
         
         // Insert application
         const insertQuery = 'INSERT INTO applications (job_id, applicant_id, cover_letter) VALUES (?, ?, ?)';
         db.query(insertQuery, [job_id, req.user.id, cover_letter], (err, result) => {
-            if (err) return res.status(500).json({ error: 'Database error', details: err.message });
+            if (err) return res.status(500).json({ error: 'Database error: ' + err.message });
             res.status(201).json({ message: 'Application submitted successfully!' });
         });
     });
