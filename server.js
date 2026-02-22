@@ -17,12 +17,12 @@ app.get('/', (req, res) => {
     res.send('CampusHire API is running. Use /api/register or /api/login endpoints.');
 });
 
-// Database Connection
+// Database Connection (uses environment variables)
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '13032025#@d',
-    database: 'campusHire'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '13032025#@d',
+    database: process.env.DB_NAME || 'campusHire'
 });
 
 // ==================== AUTHENTICATION ROUTES ====================
