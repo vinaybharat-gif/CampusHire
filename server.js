@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -9,12 +10,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static files from current directory
+// Serve static files from public folder and root
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
-// Root route
+// Root route - Serve the HTML page
 app.get('/', (req, res) => {
-    res.send('CampusHire API is running. Use /api/register or /api/login endpoints.');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Database Connection (uses environment variables)
@@ -276,14 +278,6 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 });
 
 // ==================== START SERVER ====================
-
-const path = require('path');
-
-app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');
