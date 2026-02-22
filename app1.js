@@ -27,3 +27,12 @@ async function loginUser(email, password) {
         console.error('Error:', error);
     }
 }
+
+const express = require("express");
+const app = express();
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
