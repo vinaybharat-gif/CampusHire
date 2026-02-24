@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-    origin: 'https://campushire-1.onrender.com', // Your frontend URL
+    origin: ['https://campushire-1.onrender.com', 'https://campushire-6.onrender.com', 'http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:3000', 'http://127.0.0.1:5000', 'http://localhost:5173'], // Your frontend URLs
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
     credentials: true
 }));
@@ -19,16 +19,27 @@ app.use(express.static(__dirname));
 
 // Database Connection (uses environment variables)
 const db = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '13032025#@d',
-    database: process.env.DB_NAME || 'campusHire'
+    host: 'localhost',
+    user: 'root',
+    password: '13032025#@d',
+    database: 'campusHire'
+});
+
+// Check Database Connection
+db.getConnection((err, connection) => {
+    if (err) {
+        console.error('Error connecting to the database:', err.message);
+    } else {
+        console.log('Successfully connected to the database.');
+        connection.release();
+    }
 });
 
 // ==================== AUTHENTICATION ROUTES ====================
 
 // 1. Register a User
 app.post('/api/register', async (req, res) => {
+    console.log('Register attempt:', req.body);
     const { name, email, password, role } = req.body;
     
     if (!name || !email || !password) {
@@ -42,20 +53,24 @@ app.post('/api/register', async (req, res) => {
         const query = 'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)';
         db.query(query, [name, email, hashedPassword, role || 'student'], (err, result) => {
             if (err) {
+                console.error('Register DB Error:', err);
                 if (err.code === 'ER_DUP_ENTRY') {
                     return res.status(400).json({ error: 'Email already exists' });
                 }
-                return res.status(500).json({ error: 'Database error', details: err.message });
+                return res.status(500).json({ error: 'Database error', details: err.message, sqlMessage: err.sqlMessage });
             }
+            console.log('User registered successfully:', email);
             res.status(201).json({ message: 'User registered successfully!' });
         });
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Register Server Error:', error);
+        res.status(500).json({ error: 'Server error', details: error.message });
     }
 });
 
 // 2. Login User & Generate JWT
 app.post('/api/login', (req, res) => {
+    console.log('Login attempt:', req.body);
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -64,28 +79,43 @@ app.post('/api/login', (req, res) => {
 
     const query = 'SELECT * FROM users WHERE email = ?';
     db.query(query, [email], async (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
-        if (results.length === 0) return res.status(401).json({ error: 'User not found' });
+        if (err) {
+            console.error('Login DB Error:', err);
+            return res.status(500).json({ error: 'Database error', details: err.message });
+        }
+        if (results.length === 0) {
+            console.log('Login failed: User not found');
+            return res.status(401).json({ error: 'User not found' });
+        }
 
         const user = results[0];
-        const validPassword = await bcrypt.compare(password, user.password_hash);
-        
-        if (!validPassword) return res.status(401).json({ error: 'Invalid password' });
+        try {
+            const validPassword = await bcrypt.compare(password, user.password_hash);
+            
+            if (!validPassword) {
+                console.log('Login failed: Invalid password');
+                return res.status(401).json({ error: 'Invalid password' });
+            }
 
-        // Generate Token
-        const token = jwt.sign(
-            { id: user.id, role: user.role }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '24h' }
-        );
+            // Generate Token
+            const token = jwt.sign(
+                { id: user.id, role: user.role }, 
+                process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production', 
+                { expiresIn: '24h' }
+            );
 
-        res.json({ 
-            message: 'Login successful', 
-            token, 
-            role: user.role,
-            name: user.name,
-            email: user.email
-        });
+            console.log('Login successful:', email);
+            res.json({ 
+                message: 'Login successful', 
+                token, 
+                role: user.role,
+                name: user.name,
+                email: user.email
+            });
+        } catch (error) {
+            console.error('Login processing error:', error);
+            res.status(500).json({ error: 'Server error during login' });
+        }
     });
 });
 

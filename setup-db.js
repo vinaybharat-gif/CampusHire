@@ -1,11 +1,11 @@
-//const mysql = require('mysql2');
+const mysql = require('mysql2');
 
-//const db = mysql.createPool({
- //   host: 'localhost',
-   // user: 'root',
-   // password: '13032025#@d',
-   // database: 'campusHire'
-//});
+const db = mysql.createPool({
+   host: 'localhost',
+   user: 'root',
+   password: '13032025#@d',
+   database: 'campusHire'
+});
 
 db.getConnection((err, connection) => {
     if (err) {
