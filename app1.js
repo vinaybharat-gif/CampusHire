@@ -1,7 +1,7 @@
 // Example function tied to your HTML login form submission
 async function loginUser(email, password) {
     try {
-        const response = await fetch('/api/login', {
+        const response = await fetch('https://campushire-6.onrender.com/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
