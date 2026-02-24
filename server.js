@@ -7,12 +7,12 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(express.json());
 app.use(cors({
     origin: 'https://campushire-1.onrender.com', // Your frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
     credentials: true
 }));
+app.use(express.json());
 
 // Serve static files from root directory
 app.use(express.static(__dirname));
