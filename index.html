@@ -496,7 +496,7 @@
             const password = document.getElementById('loginPassword').value;
 
             try {
-                const response = await fetch('http://localhost:3000/api/login', {
+                const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -537,7 +537,7 @@
             const role = document.getElementById('regRole').value;
 
             try {
-                const response = await fetch('http://localhost:3000/api/register', {
+                const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password, role })
@@ -571,7 +571,7 @@
                 jobsList.innerHTML = '<p>Loading jobs...</p>';
                 
                 try {
-                    const response = await fetch('http://localhost:3000/api/jobs');
+                    const response = await fetch('/api/jobs');
                     const jobs = await response.json();
                     
                     if (jobs.length === 0) {
@@ -609,7 +609,7 @@
             }
             
             try {
-                const response = await fetch('http://localhost:3000/api/applications', {
+                const response = await fetch('/api/applications', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',

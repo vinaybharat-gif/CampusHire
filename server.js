@@ -279,6 +279,11 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 
 // ==================== START SERVER ====================
 
+// Catch-all route for SPA - serve index.html for any unknown routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // This tells Express to use Render's port if available, or fallback to 3000 locally
 const PORT = process.env.PORT || 3000;
 
