@@ -13,11 +13,6 @@ app.use(cors());
 // Serve static files from root directory
 app.use(express.static(__dirname));
 
-// Root route - Serve the HTML page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
 // Database Connection (uses environment variables)
 const db = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
@@ -277,10 +272,6 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 });
 
 // ==================== START SERVER ====================
-
-app.get("/", (req, res) => {
-  res.send("CampusHire Server Running 🚀");
-});
 
 // This tells Express to use Render's port if available, or fallback to 5000 locally
 const PORT = process.env.PORT || 5000;
