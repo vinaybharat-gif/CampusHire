@@ -307,8 +307,8 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 
 // ==================== START SERVER ====================
 
-// Serve index.html for all non-API routes (SPA support)
-app.get('*', (req, res) => {
+// Serve index.html for all non-API routes (SPA support) - Express 5 compatible
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -317,3 +317,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
+
