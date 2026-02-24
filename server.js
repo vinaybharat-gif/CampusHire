@@ -10,13 +10,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static files from public folder and root
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from root directory
 app.use(express.static(__dirname));
 
 // Root route - Serve the HTML page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Database Connection (uses environment variables)
@@ -281,7 +280,7 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 
 // Catch-all route for SPA - serve index.html for any unknown routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // This tells Express to use Render's port if available, or fallback to 3000 locally
