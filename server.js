@@ -273,6 +273,10 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 
 // ==================== START SERVER ====================
 
+app.get("/", (req, res) => {
+  res.send("CampusHire Backend Running 🚀");
+});
+
 // This tells Express to use Render's port if available, or fallback to 5000 locally
 const PORT = process.env.PORT || 5000;
 
