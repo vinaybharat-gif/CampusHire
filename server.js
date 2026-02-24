@@ -278,14 +278,13 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 
 // ==================== START SERVER ====================
 
-// Catch-all route for SPA - serve index.html for any unknown routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+app.get("/", (req, res) => {
+  res.send("CampusHire Server Running 🚀");
 });
 
-// This tells Express to use Render's port if available, or fallback to 3000 locally
-const PORT = process.env.PORT || 3000;
+// This tells Express to use Render's port if available, or fallback to 5000 locally
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server running on port " + PORT);
 });
