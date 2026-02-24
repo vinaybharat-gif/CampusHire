@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-    origin: ['https://campushire-1.onrender.com', 'https://campushire-6.onrender.com', 'http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:3000', 'http://127.0.0.1:5000', 'http://localhost:5173'], // Your frontend URLs
+    origin: true, // Allow all origins (for development/deployment)
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
     credentials: true
 }));
@@ -19,10 +19,10 @@ app.use(express.static(__dirname));
 
 // Database Connection (uses environment variables)
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '13032025#@d',
-    database: 'campusHire'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '13032025#@d',
+    database: process.env.DB_NAME || 'campusHire'
 });
 
 // Check Database Connection
@@ -307,11 +307,11 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 
 // ==================== START SERVER ====================
 
-app.get("/", (req, res) => {
-  res.send("CampusHire Backend Running 🚀");
+// Serve index.html for all non-API routes (SPA support)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// This tells Express to use Render's port if available, or fallback to 5000 locally
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
