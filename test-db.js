@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: '13032025#@d',
+    password: '13032025',
     database: 'campusHire'
 });
 
@@ -19,7 +19,7 @@ db.getConnection((err, connection) => {
             const tempDb = mysql.createPool({
                 host: 'localhost',
                 user: 'root',
-                password: '13032025#@d'
+                password: '13032025'
             });
             
             tempDb.getConnection((err, conn) => {
